@@ -1,3 +1,4 @@
-#SPDX-License-Identifier: MIT-0
----
-# handlers file for ansible-role-kubernetes
+- name: restart kubelet
+  service:
+    name: kubelet
+    state: restarted
