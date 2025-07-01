@@ -1,3 +1,4 @@
+# Kubernetes Packages
 kubernetes_packages:
   - name: kubelet
     state: present
@@ -5,3 +6,33 @@ kubernetes_packages:
     state: present
   - name: kubeadm
     state: present
+
+kubernetes_version_kubeadm: 'stable-{{ kubernetes_version }}' # From required VAR kubernetes_version
+kubernetes_apt_release_channel: "stable"
+kubernetes_apt_repository: "https://pkgs.k8s.io/core:/{{ kubernetes_apt_release_channel }}:/v{{ kubernetes_version }}/deb/"
+
+
+# Network configuration
+kubernetes_pod_network_cidr: 10.0.0.0/8
+
+
+# Configuration file for kubeadm init
+kubernetes_kubeadm_kubelet_config_file_path: /etc/kubernetes/kubelet.conf
+
+kubernetes_config_init_configuration:
+  localAPIEndpoint:
+    advertiseAddress: "{{ kubernetes_apiserver_advertise_address | default(ansible_default_ipv4.address, true) }}"
+    bindPort: 6443
+  nodeRegistration:
+    criSocket: "unix:///var/run/cri-dockerd.sock"
+
+kubernetes_config_cluster_configuration:
+  kubernetesVersion: "{{ kubernetes_version_kubeadm }}"
+  networking:
+    podSubnet: "{{ kubernetes_pod_network_cidr }}"
+
+kubernetes_config_kubelet_configuration:
+  cgroupDriver: systemd
+  failSwapOn: true
+
+kubernetes_config_proxy_configuration: {}

@@ -39,11 +39,6 @@
 
 
 
-
-
-
-
-
 # Set up nodes.
 - name: Get the kubeadm join command from the Kubernetes control plane.
   command: kubeadm token create --print-join-command
