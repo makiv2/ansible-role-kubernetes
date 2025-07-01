@@ -14,6 +14,8 @@ apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 {{ kubernetes_config_kubelet_configuration | to_nice_yaml }}
 {% endif %}
+
+
 {% if kubernetes_config_kube_proxy_configuration|length > 0 %}
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
