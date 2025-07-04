@@ -34,6 +34,10 @@
     state: link
     mode: 0644
 
+
+
+# Move out
+
 - name: Configure Cilium CNI
   command: "kubectl apply -f {{ kubernetes_calico_manifest_file }}"
   register: cilium_result

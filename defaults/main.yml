@@ -15,6 +15,10 @@ kubernetes_apt_repository: "https://pkgs.k8s.io/core:/{{ kubernetes_apt_release_
 # Network configuration
 kubernetes_pod_network_cidr: 10.0.0.0/8
 
+# Runtime
+kubernetes_cri: 'docker'
+kubernetes_cri_socket: 'unix:///var/run/cri-dockerd.sock'
+
 
 # Configuration file for kubeadm init
 kubernetes_kubeadm_kubelet_config_file_path: /etc/kubernetes/kubelet.conf
@@ -24,7 +28,7 @@ kubernetes_config_init_configuration:
     advertiseAddress: "{{ kubernetes_apiserver_advertise_address | default(ansible_default_ipv4.address, true) }}"
     bindPort: 6443
   nodeRegistration:
-    criSocket: "unix:///var/run/cri-dockerd.sock"
+    criSocket: "{{ kubernetes_cri_socket }}"
 
 kubernetes_config_cluster_configuration:
   kubernetesVersion: "{{ kubernetes_version_kubeadm }}"

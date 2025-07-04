@@ -1,0 +1,46 @@
+- name: install go
+  command: apt install golang-go -y
+
+- name: Clone cri-dockerd repository (force overwrite if exists)
+  git:
+    repo: https://github.com/Mirantis/cri-dockerd.git
+    dest: /opt/cri-dockerd
+    version: master
+    force: yes
+
+- name: Run make cri-dockerd
+  command: make cri-dockerd
+  args:
+    chdir: /opt/cri-dockerd
+
+- name: Ensure /usr/local/bin exists
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: '0755'
+
+- name: Install cri-dockerd binary
+  command: install -o root -g root -m 0755 cri-dockerd /usr/local/bin/cri-dockerd
+  args:
+    chdir: /opt/cri-dockerd
+
+- name: Install systemd service files
+  shell: install packaging/systemd/* /etc/systemd/system
+  args:
+    chdir: /opt/cri-dockerd
+
+- name: Replace path in cri-docker.service
+  replace:
+    path: /etc/systemd/system/cri-docker.service
+    regexp: '/usr/bin/cri-dockerd'
+    replace: '/usr/local/bin/cri-dockerd'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start cri-docker.socket
+  systemd:
+    name: cri-docker.socket
+    enabled: yes
+    state: started

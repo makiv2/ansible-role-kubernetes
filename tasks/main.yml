@@ -27,6 +27,10 @@
     state: started
     enabled: true
 
+# Docker runtime pre-reqs
+- include_tasks: docker-runtime-prep.yml
+  when: kubernetes_cri == 'docker'
+
 - name: Check if Kubernetes has already been initialized.
   stat:
     path: /etc/kubernetes/admin.conf
