@@ -18,9 +18,6 @@
   notify: restart kubelet
   loop: "{{ kubernetes_packages }}"
 
-- include_tasks: kubelet-setup.yml  # deprecated
-  when: kubernetes_kubelet_extra_args|length > 0
-
 - name: Ensure kubelet is started and enabled at boot.
   service:
     name: kubelet
@@ -40,8 +37,9 @@
 - include_tasks: control-plane-setup.yml
   when: kubernetes_role == 'control_plane'
 
-
-
+# CNI setup
+- include_tasks: cni-setup.yml
+  when: kubernetes_configure_cni == 'true'
 
 # Set up nodes.
 - name: Get the kubeadm join command from the Kubernetes control plane.
@@ -59,8 +57,6 @@
   delegate_to: "{{ item }}"
   delegate_facts: true
   with_items: "{{ groups['all'] }}"
-
-
 
 - include_tasks: node-setup.yml
   when: kubernetes_role == 'node'

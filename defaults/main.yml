@@ -12,13 +12,14 @@ kubernetes_apt_release_channel: "stable"
 kubernetes_apt_repository: "https://pkgs.k8s.io/core:/{{ kubernetes_apt_release_channel }}:/v{{ kubernetes_version }}/deb/"
 
 
-# Network configuration
+# Network configuration / CNI
 kubernetes_pod_network_cidr: 10.0.0.0/8
+kubernetes_configure_cni: false
+kubernetes_cni: cilium
 
 # Runtime
 kubernetes_cri: 'docker'
 kubernetes_cri_socket: 'unix:///var/run/cri-dockerd.sock'
-
 
 # Configuration file for kubeadm init
 kubernetes_kubeadm_kubelet_config_file_path: /etc/kubernetes/kubelet.conf
@@ -42,4 +43,4 @@ kubernetes_config_kubelet_configuration:
 kubernetes_config_proxy_configuration: {}
 
 # Node configuration
-kubernetes_allow_pods_on_control_plane: false
+kubernetes_allow_pods_on_control_plane: true
