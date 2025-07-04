@@ -2,14 +2,32 @@
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
 
-- include_tasks: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+# - include_tasks: setup-Debian.yml
+#   when: ansible_os_family == 'Debian'
 
 - name: Ensure dependencies are installed.
   package: 
     name:
       - curl
+      - apt-transport-https
+      - ca-certificates
+      - python3-debian
+      - make
     state: present
+
+- name: Add Kubernetes repository.
+  deb822_repository:
+    name: kubernetes
+    types: deb
+    uris: "{{ kubernetes_apt_repository }}"
+    suites: /
+    signed_by: "{{ kubernetes_apt_repository }}/Release.key"
+  register: kubernetes_repository
+
+- name: Update Apt cache.
+  apt:
+    update_cache: true
+  when: kubernetes_repository.changed
 
 - name: Install Kubernetes packages.
   package:
