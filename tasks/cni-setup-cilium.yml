@@ -43,3 +43,24 @@
   loop:
     - ''
     - '.sha256sum'
+
+- name: Install Cilium on the cluster
+  command: >
+    cilium install
+    --version {{ cilium_version }}
+  register: cilium_install
+
+- name: Show installation result
+  debug:
+    var: cilium_install.stdout
+
+- name: Enable Hubble UI
+  command: >
+    cilium hubble enable
+  register: hubble_enable
+  when: enable_hubble == true
+
+- name: Show Hubble result
+  debug:
+    var: hubble_enable.stdout
+  when: enable_hubble == true
