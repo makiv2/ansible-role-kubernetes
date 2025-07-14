@@ -56,8 +56,10 @@
   when: kubernetes_role == 'control_plane'
 
 # CNI setup
-- include_tasks: cni-setup.yml
-  when: kubernetes_configure_cni == 'true'
+- include_tasks: cni-setup-cilium.yml
+  when:
+    - kubernetes_configure_cni == true
+    - kubernetes_cni == 'cilium'
 
 # Set up nodes.
 - name: Get the kubeadm join command from the Kubernetes control plane.

@@ -16,6 +16,10 @@ kubernetes_apt_repository: "https://pkgs.k8s.io/core:/{{ kubernetes_apt_release_
 kubernetes_pod_network_cidr: 10.0.0.0/8
 kubernetes_configure_cni: false
 kubernetes_cni: cilium
+cilium_cli_version_url: "https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt"
+cli_arch_map:
+  x86_64: amd64
+  aarch64: arm64
 
 # Runtime
 kubernetes_cri: 'docker'

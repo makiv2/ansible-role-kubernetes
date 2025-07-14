@@ -1,8 +1,0 @@
-- name: Configure Cilium CNI
-  command: "kubectl apply -f {{ kubernetes_calico_manifest_file }}"
-  register: cilium_result
-  changed_when: "'created' in cilium_result.stdout"
-  when: kubernetes_pod_network.cni == 'cilium'
-  until: cilium_result is not failed
-  retries: 12
-  delay: 5

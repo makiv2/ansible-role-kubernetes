@@ -1,0 +1,45 @@
+- name: Get machine architecture
+  ansible.builtin.set_fact:
+    cli_arch: "{{ cli_arch_map[ansible_facts['architecture']] | default('amd64') }}"
+
+- name: Get latest Cilium CLI version
+  ansible.builtin.uri:
+    url: "{{ cilium_cli_version_url }}"
+    return_content: yes
+  register: cilium_version_response
+
+- name: Set Cilium CLI version fact
+  ansible.builtin.set_fact:
+    cilium_cli_version: "{{ cilium_version_response.content | trim }}"
+
+- name: Download Cilium CLI tar and sha256sum
+  ansible.builtin.get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/{{ cilium_cli_version }}/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
+    dest: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
+    mode: '0644'
+  loop:
+    - ''
+    - '.sha256sum'
+
+- name: Verify sha256 checksum
+  ansible.builtin.command: >
+    sha256sum --check cilium-linux-{{ cli_arch }}.tar.gz.sha256sum
+  args:
+    chdir: /tmp
+  register: sha_check
+  failed_when: "'OK' not in sha_check.stdout"
+
+- name: Extract and install Cilium CLI binary
+  ansible.builtin.unarchive:
+    src: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz"
+    dest: /usr/local/bin
+    remote_src: yes
+    extra_opts: [--no-same-owner]
+
+- name: Remove downloaded files
+  ansible.builtin.file:
+    path: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
+    state: absent
+  loop:
+    - ''
+    - '.sha256sum'
