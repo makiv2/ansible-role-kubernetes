@@ -44,23 +44,26 @@
     - ''
     - '.sha256sum'
 
-- name: Install Cilium on the cluster
-  command: >
-    cilium install
+
+- name: Add Cilium Helm repo
+  ansible.builtin.command: helm repo add cilium https://helm.cilium.io/
+  args:
+    creates: ~/.cache/helm/repository/cilium-index.yaml
+
+- name: Update Helm repos
+  ansible.builtin.command: helm repo update
+
+- name: Install Cilium via Helm
+  ansible.builtin.command: >
+    helm install cilium cilium/cilium
     --version {{ cilium_version }}
-  register: cilium_install
+    --namespace kube-system
+  args:
+    creates: /tmp/cilium-helm-installed
+  register: helm_cilium_install
 
-- name: Show installation result
-  debug:
-    var: cilium_install.stdout
-
-- name: Enable Hubble UI
-  command: >
-    cilium hubble enable
-  register: hubble_enable
-  when: enable_hubble == true
-
-- name: Show Hubble result
-  debug:
-    var: hubble_enable.stdout
-  when: enable_hubble == true
+- name: Mark Cilium as installed
+  ansible.builtin.file:
+    path: /tmp/cilium-helm-installed
+    state: touch
+  when: helm_cilium_install is changed

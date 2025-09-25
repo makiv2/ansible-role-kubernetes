@@ -57,6 +57,9 @@
 - include_tasks: control-plane-setup.yml
   when: kubernetes_role == 'control_plane'
 
+# Install Helm
+- include_tasks: install-helm.yml
+
 # CNI setup
 - include_tasks: cni-setup-cilium.yml
   when:
