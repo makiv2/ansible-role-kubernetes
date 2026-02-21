@@ -53,17 +53,12 @@
 - name: Update Helm repos
   ansible.builtin.command: helm repo update
 
-- name: Install Cilium via Helm
+- name: Install or upgrade Cilium via Helm
   ansible.builtin.command: >
-    helm install cilium cilium/cilium
+    helm upgrade --install cilium cilium/cilium
     --version {{ cilium_version }}
     --namespace kube-system
-  args:
-    creates: /tmp/cilium-helm-installed
-  register: helm_cilium_install
-
-- name: Mark Cilium as installed
-  ansible.builtin.file:
-    path: /tmp/cilium-helm-installed
-    state: touch
-  when: helm_cilium_install is changed
+    --create-namespace
+    --wait
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

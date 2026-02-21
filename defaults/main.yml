@@ -22,7 +22,7 @@ cilium_cli_version_url: "https://raw.githubusercontent.com/cilium/cilium-cli/mai
 cli_arch_map:
   x86_64: amd64
   aarch64: arm64
-cilium_version: 1.17.5
+cilium_version: 1.19.1
 enable_hubble: false
 
 # Runtime
