@@ -32,9 +32,11 @@
   when: kubernetes_repository.changed
 
 - name: Install Kubernetes packages.
-  package:
+  apt:
     name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
+    state: "{{ item.state | default(kubernetes_packages_state) }}"
+    update_cache: true
+    cache_valid_time: "{{ kubernetes_apt_cache_valid_time }}"
   notify: restart kubelet
   loop: "{{ kubernetes_packages }}"
 

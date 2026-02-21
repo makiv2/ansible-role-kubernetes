@@ -1,11 +1,13 @@
 # Kubernetes Packages
 kubernetes_packages:
   - name: kubelet
-    state: present
   - name: kubectl
-    state: present
   - name: kubeadm
-    state: present
+
+# Use `latest` so version bumps in the configured Kubernetes apt repo are applied
+# even when packages are already installed.
+kubernetes_packages_state: latest
+kubernetes_apt_cache_valid_time: 3600
 
 kubernetes_version_kubeadm: 'stable-{{ kubernetes_version }}' # From required VAR kubernetes_version
 kubernetes_apt_release_channel: "stable"
